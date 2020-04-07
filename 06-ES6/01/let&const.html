@@ -19,7 +19,6 @@
             // 12=>3 暂时性死区
             // 4 不允许重复声明
 
-
             // 块级作用域应用
             // 1 内层变量覆盖了外层作用域
             // 2 计数的循环变量泄露为全局变量
@@ -226,18 +225,59 @@
 
             // 内层变量覆盖了外层作用域
 
-            var tmp = new Date();
+            // var tmp = new Date();
 
-            function f() {
-                console.log(tmp);
-                if (false) {
-                    let tmp = "hello world";
-                }
-                // let tmp; // 暂时性死区
-            }
-            f();
+            // function f() {
+            //     console.log(tmp);
+            //     if (false) {
+            //         let tmp = "hello world";
+            //     }
+            //     // let tmp; // 暂时性死区
+            // }
+            // f();
 
             // 计数的循环变量泄露为全局变量
+
+            // function f1() {
+            //     let n = 5;
+            //     if (true) {
+            //         n = 10;
+            //     }
+            //     console.log(n); // 5
+            // }
+            // f1()
+        </script>
+
+        <script>
+            // const声明一个只读的常量。一旦声明，常量的值就不能改变。
+            // 1 多了块级作用域
+            // 2 const 不存在变量提升
+            // 3 const 不允许重新赋值
+            // 同样存在暂时性死区
+            // 3 不允许重复声明
+            // const a = 10;
+            // a = 20;
+
+            // const a = 10
+
+            // const实际上保证的，并不是变量的值不得改动，而是变量指向的那个内存地址所保存的数据不得改动。
+            
+            var a = 10;
+            var o = {
+                name: "nick",
+                age: 17,
+            };
+            // 基本数据类型
+
+            const x = a;
+            // 顶层对象的属性
+            // let var 全局对象不同 var的全局变量挂载到 window对象
+            // let 顶层对象不再是window 而是global 浏览器有没有global 变量不再挂载到window对象下
+            // 从 ES6 开始，全局变量将逐步与顶层对象的属性脱钩。
+            const obj = o
+            // 复杂数据类型 这里只是复制了指针地址 和o指向同一个堆内存
+
+
         </script>
     </body>
 </html>
