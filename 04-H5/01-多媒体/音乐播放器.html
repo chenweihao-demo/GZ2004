@@ -224,8 +224,10 @@
                 var n = Math.floor(n);
                 var m = Math.floor(n / 60);
                 var s = n % 60;
-                m = m > 9 ? m : "0" + m;
-                s = s > 9 ? s : "0" + s;
+                // m = m > 9 ? m : "0" + m;
+                // s = s > 9 ? s : "0" + s;
+                m = String(m).padStart(2,'0')
+                s = String(s).padStart(2,'0')
                 return m + ":" + s;
             }
 
