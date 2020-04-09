@@ -39,7 +39,7 @@
         <div class="root"></div>
         <script>
             var name = "jsonp" + Date.now();
-            var xx = function(params) {
+            var xx = function (params) {
                 console.log(params);
             };
 
@@ -58,15 +58,18 @@
                 // };
                 // console.log(window[name]);
 
-                window[name] = callback;
+                // ES5
+                // window[name] = callback;
+                // ES6
+                Object.assign(window, { [name]: callback });
 
                 var node = document.createElement("script");
                 node.src = url + "&callback=" + name;
                 document.body.appendChild(node);
             }
 
-            document.querySelector("button").onclick = function() {
-                jsonp("https://api.jisuapi.com/astro/fortune?astroid=1&appkey=f6212d5b9bcff4ef", function(params) {
+            document.querySelector("button").onclick = function () {
+                jsonp("https://api.jisuapi.com/astro/fortune?astroid=1&appkey=f6212d5b9bcff4ef", function (params) {
                     // console.log(params);
                     // 处理数据
                     document.querySelector(".root").innerText = params.result.today.presummary;
@@ -75,7 +78,7 @@
 
             //$.get(url, callback)
             // jsonp(url, callback)
-            jsonp("https://api.jisuapi.com/astro/fortune?astroid=5&appkey=f6212d5b9bcff4ef", function(response) {
+            jsonp("https://api.jisuapi.com/astro/fortune?astroid=5&appkey=f6212d5b9bcff4ef", function (response) {
                 console.log(response);
             });
             // 回调函数
