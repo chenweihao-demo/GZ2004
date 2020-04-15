@@ -54,7 +54,9 @@
         <script>
             var app2 = new Vue({
                 el: "#app2",
-                data: {},
+                data: {
+                    a: 1,
+                },
 
                 computed: {
                     computednow: function () {
@@ -73,10 +75,20 @@
                 created() {
                     window.setInterval(() => {
                         // console.log("computednow", this.computednow);
-                        console.log("methodsnow", this.methodsnow());
+                        // console.log("methodsnow", this.methodsnow());
                     }, 1000);
                 },
+
+                watch: {
+                    a: function (n, o) {
+                        console.log(n, o);
+                    },
+                },
             });
+            // 实例对象方法
+            // app2.$watch("a", function (n, o) {
+            //     console.log(n, o);
+            // });
         </script>
     </body>
 </html>
