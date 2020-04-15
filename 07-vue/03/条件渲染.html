@@ -65,5 +65,37 @@
                 },
             });
         </script>
+
+        <hr />
+        <!-- 用 key 管理可复用的元素 -->
+        <div id="app2">
+            <template v-if="loginType === 'username'">
+                <label for="username">Username</label>
+                <input id="username" name="username" key="username" placeholder="Enter your username" />
+            </template>
+            <template v-else>
+                <label for="email">Email</label>
+                <input id="email" name="email" key="email" placeholder="Enter your email address" />
+            </template>
+            <button @click="ToggleLoginType">Toggle loginType</button>
+        </div>
+        <script>
+            var app2 = new Vue({
+                el: "#app2",
+                data: {
+                    loginType: "username",
+                },
+                methods: {
+                    ToggleLoginType: function () {
+                        this.loginType = this.loginType === "username" ? "" : "username";
+                    },
+                },
+            });
+            // 两个模板使用了相同的元素，<input> 不会被替换掉
+            // 这两个元素是完全独立的，不要复用它们  key
+
+            // 不推荐同时使用 v-if 和 v-for    如果一起使用for更优先
+            // 如果需要嵌套 <template></template>
+        </script>
     </body>
 </html>
