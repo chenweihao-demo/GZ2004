@@ -1,15 +1,30 @@
 <template>
   <div id="app">
-    <AddTodo @translate-new-todo="receiveNewTodo($event)"></AddTodo>
-    <transition name="custom-classes-transition" enter-active-class="animated tada" appear>
+    <AddTodo
+      @translate-new-todo="receiveNewTodo($event)"
+      :is-show="false"
+      v-bind:num="num"
+      @updata:num="num=$event"
+      
+    >
+    我是slot插槽内容
+    </AddTodo>
+
+    <transition name="custom-classes-transition" enter-active-class="animated rollIn" appear>
       <transition-group
         name="custom-classes-transition"
         tag="ul"
         enter-active-class="animated bounceInUp"
       >
-        <TodoItem v-for="(todo, index) in todos" :todo="todo" :key="index"></TodoItem>
+        <TodoItem
+          v-for="(todo, index) in todos"
+          v-bind="todo"
+          :key="index"
+          @dblclick.native="todo.complated = !todo.complated"
+        ></TodoItem>
       </transition-group>
     </transition>
+    <BaseMyButton></BaseMyButton>
   </div>
 </template>
 
@@ -34,7 +49,8 @@ export default {
           complated: false,
           text: "代办项2"
         }
-      ]
+      ],
+      num: 20
     };
   },
   methods: {
