@@ -1,5 +1,7 @@
 <template>
   <div id="app">
+    <HelloWorld ref="xxx"></HelloWorld>
+
     <header>APP.vue HEADER</header>
 
     <navigation-link url="/profile">
@@ -30,17 +32,17 @@
 </template>
 
 <script>
-// import HelloWorld from './components/HelloWorld.vue'
+import HelloWorld from "./components/HelloWorld.vue";
 import NavigationLink from "./components/NavigationLink.vue";
 import BaseLayout from "./components/BaseLayout.vue";
 
 export default {
   name: "App",
   components: {
-    // HelloWorld
+    HelloWorld,
     NavigationLink,
-    BaseLayout,
-    "my-component": () => import("./my-async-component")
+    BaseLayout
+    // "my-component": () => import("./my-async-component")
   },
   data: function() {
     return {
@@ -53,6 +55,16 @@ export default {
     currentTabComponent: function() {
       return "Tab" + this.currentTab;
     }
+  },
+  created() {
+    console.log(this.$data, this.$el);
+    // 访问根实例
+    console.log(this.$root);
+    console.log(this.$root.$data, this.$root.$el);
+
+    // 父组件获取子组件
+    var refs = this.$refs;
+    console.log("refs", refs, refs.xxx);
   }
 };
 </script>

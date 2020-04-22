@@ -39,4 +39,7 @@ Vue.config.productionTip = false
 
 new Vue({
   render: h => h(App),
+  data: {
+    msg: 'root根组件状态'
+  }
 }).$mount('#app')
