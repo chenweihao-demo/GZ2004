@@ -1,6 +1,11 @@
 <template>
   <div class="user">
     <h3>{{$route.params.username}} 的个人主页</h3>
+    
+    <router-link to="profile">个人面板</router-link> | 
+    <router-link to="posts">所有文章</router-link>
+
+    <router-view></router-view>
   </div>
 </template>
 <script>
@@ -10,11 +15,20 @@ export default {
   created() {
     console.log("created", this.$route.params.username);
   },
+  // 监听路由变化
   watch: {
     $route(to, from) {
       // 对路由变化作出响应...
       console.log("路由变化", to, from, to.params.username);
     }
+  },
+
+  // 路由守卫
+  beforeRouteUpdate(to, from, next) {
+    // react to route changes...
+    // don't forget to call next()
+    console.log("beforeRouteUpdate", to, from);
+    next();
   }
 };
 </script>

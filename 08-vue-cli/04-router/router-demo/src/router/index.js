@@ -9,6 +9,10 @@ import Post from "../views/Post.vue";
 
 import Search from "../views/Search.vue";
 
+import NotFound from "../views/NotFound.vue";
+
+import Profile from "../views/Profile.vue";
+import Posts from "../views/Posts.vue";
 
 Vue.use(VueRouter);
 
@@ -42,7 +46,16 @@ const routes = [
         path: "/user/:username",
         name: "User",
         component: User,
+        // 嵌套路由 子路由
+        children: [{ path: "profile", component: Profile },{ path: "posts", component: Posts }],
     },
+
+    // {
+    //     path: "/user/:username/profile",
+    //     name: "Profile",
+    //     component: Profile,
+    // },
+
     {
         // 动态路径参数 以冒号开头  接收用$route.params
         path: "/user/:username/post/:postId",
@@ -56,6 +69,13 @@ const routes = [
         path: "/search",
         name: "Search",
         component: Search,
+    },
+
+    {
+        // 404错误页面 所有页面
+        // 匹配的优先级就按照路由的定义顺序：谁先定义的，谁的优先级就最高。
+        path: "*",
+        component: NotFound,
     },
 ];
 

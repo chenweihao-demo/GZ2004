@@ -3,11 +3,13 @@
     <div id="nav">
       <router-link to="/">Home</router-link>|
       <router-link to="/about">About</router-link>|
-      <router-link to="/concat">Concat</router-link> | 
-      <router-link to="/user">User</router-link> |
-
-      <router-link to="/search">Search</router-link> | 
-
+      <router-link to="/concat">Concat</router-link>|
+      <router-link to="/user">User</router-link>
+|
+      <!-- 声明式导航 -->
+      <router-link to="/search">Search</router-link>|
+      <!-- 编程式导航 -->
+      <button @click="$router.push('/')">跳转到首页</button>
     </div>
 
     <router-view />

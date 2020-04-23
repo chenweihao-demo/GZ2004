@@ -1,5 +1,6 @@
 <template>
   <div class="user">
-    <h3>搜索页 {{$route.query.kw}}</h3>
+    <h3>404</h3>
   </div>
 </template>
+
