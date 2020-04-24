@@ -2,6 +2,9 @@
   <div class="home">
     <div class="personalized">
       <CardTitle>推荐歌单</CardTitle>
+      <ul class="songlist">
+        <SongListCard v-for="(item, index) in randomPersonalizeds()" :key="index" :item="item"></SongListCard>
+      </ul>
     </div>
 
     <div class="newsong">
@@ -14,34 +17,61 @@
 // @ is an alias to /src
 // import HelloWorld from "@/components/HelloWorld.vue";
 import CardTitle from "@/components/CardTitle.vue";
+import SongListCard from "@/components/SongListCard.vue";
 
 export default {
   name: "Home",
   data: function() {
     return {
-      personalized: [],
-      newsong: []
+      personalizeds: [],
+      newsongs: []
     };
   },
   components: {
     // HelloWorld
-    CardTitle
+    CardTitle,
+    SongListCard
   },
   methods: {
+    // 获取推荐歌单
     getPersonalized: function() {
       this.axios
-        .get("/sug?code=utf-8&q=%E7%94%B7%E8%A3%85")
-        .then(function(response) {
-          console.log(response);
+        .get("/personalized")
+        .then(response => {
+          // console.log(response);
+          this.personalizeds = response.data.result;
         })
         .catch(function(error) {
           console.log(error);
         });
     },
-    getNewSong: function() {}
+    getNewSong: function() {},
+
+    // 随机取六个推荐歌单
+    randomPersonalizeds: function () {
+      // 深拷贝数组
+      var arr = [...this.personalizeds]
+      
+      var newArr = []
+      for (let i = 0; i < 6; i++) {
+        var r = Math.floor(Math.random()*arr.length)
+        newArr.push(...arr.splice(r,1))
+      }
+      console.log(newArr);
+      
+      return newArr
+    }
   },
   created() {
+    // 每次创建组件都拿数据 太频繁 本地存储
     this.getPersonalized();
   }
 };
 </script>
+
+<style lang="less">
+.songlist {
+  display: flex;
+  flex-wrap: wrap;
+}
+</style>

@@ -7,9 +7,12 @@
 </template>
 
 <style lang="less" scoped>
-    h3 {
-        &:before {
-           content: '00'; 
-        }
-    }
+@red: #d43c33;
+h3 {
+  border-left: 2px solid @red;
+  font-size: 16px;
+  line-height: 16px;
+  padding-left: 15px;
+  margin: 15px 0;
+}
 </style>
