@@ -13,6 +13,6 @@ h3 {
   font-size: 16px;
   line-height: 16px;
   padding-left: 15px;
-  margin: 15px 0;
+  margin: 25px 0 15px 0;
 }
 </style>

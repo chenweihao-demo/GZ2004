@@ -1,5 +1,8 @@
 <template>
   <div class="home">
+    <div class="loading" v-if="showLoading">
+      <img src="../assets/loading.svg" alt />
+    </div>
     <HomeLink></HomeLink>
 
     <div class="personalized">
@@ -13,7 +16,12 @@
       <CardTitle>推荐音乐</CardTitle>
       <ul>
         <!-- <SongItem v-for="(item, index) in newsongs" :key="index" :songItem="item" :order="index"></SongItem> -->
-        <SongItem v-for="(item, index) in newsongs" :key="index" :songItem="item"></SongItem>
+        <SongItem
+          v-for="(item, index) in newsongs"
+          :key="index"
+          :songItem="item"
+          @tanslate-song-id="$emit('tanslate-song-id', $event)"
+        ></SongItem>
       </ul>
     </div>
   </div>
@@ -32,7 +40,8 @@ export default {
   data: function() {
     return {
       personalizeds: [],
-      newsongs: []
+      newsongs: [],
+      showLoading: false
     };
   },
   components: {
@@ -126,6 +135,21 @@ export default {
       // 已经过期
       this.getNewSong();
     }
+  },
+
+  // 路由守卫
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      vm.showLoading = false;
+    });
+  },
+
+  beforeRouteLeave(to, from, next) {
+    // 导航离开该组件的对应路由时调用
+    // 可以访问组件实例 `this`
+    // console.log(to, from, "即将离开home");
+    this.showLoading = true;
+    next();
   }
 };
 </script>
@@ -134,5 +158,23 @@ export default {
 .songlist {
   display: flex;
   flex-wrap: wrap;
+}
+.home {
+  position: relative;
+}
+.loading {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  z-index: 999;
+  justify-content: center;
+  align-items: center;
+  img {
+    width: 36px;
+  }
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <li class="songitem">
+  <li class="songitem" @click="$emit('tanslate-song-id', songItem.id)">
     <span class="order" v-if="order !== undefined">{{order + 1}}</span>
     <div class="main" :style="{marginLeft: order !== undefined? '0px':'10px'}">
       <h3>
@@ -53,7 +53,7 @@ export default {
 
 .songitem {
   display: flex;
-  margin: 5px 0;
+  margin: 10px 0;
   align-items: center;
 
   .order {

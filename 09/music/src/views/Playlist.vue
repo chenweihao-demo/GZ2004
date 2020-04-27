@@ -47,11 +47,11 @@ export default {
     };
   },
   methods: {
-    getSongListDetail: function() {
+    getSongListDetail: function(id) {
       this.axios
         .get("/playlist/detail", {
           params: {
-            id: this.songListId
+            id: id
           }
         })
         .then(response => {
@@ -81,37 +81,79 @@ export default {
   },
 
   // 第一次进入的时候
-  created() {
-    // 每次创建组件都拿数据 太频繁 本地存储
-    const cacheSongListDetail = JSON.parse(
-      window.localStorage.getItem("sl-" + this.songListId)
-    );
-    if (cacheSongListDetail && cacheSongListDetail.expire > Date.now()) {
-      // 存在并且还没有过期
-      this.songListDetail = cacheSongListDetail.result;
-    } else {
-      // 已经过期
-      this.getSongListDetail();
-    }
+  // created() {
+  //   // 每次创建组件都拿数据 太频繁 本地存储
+  //   const cacheSongListDetail = JSON.parse(
+  //     window.localStorage.getItem("sl-" + this.songListId)
+  //   );
+  //   if (cacheSongListDetail && cacheSongListDetail.expire > Date.now()) {
+  //     // 存在并且还没有过期
+  //     this.songListDetail = cacheSongListDetail.result;
+  //   } else {
+  //     // 已经过期
+  //     this.getSongListDetail(this.songListId);
+  //   }
+  // },
+
+  beforeRouteEnter(to, from, next) {
+    // 可以通过传一个回调给 next来访问组件实例。在导航被确认的时候执行回调，并且把组件实例作为回调方法的参数。
+    // console.log(this)
+
+    // 获取数据
+
+    window.axios
+      .get("/playlist/detail", {
+        params: {
+          id: to.query.id
+        }
+      })
+      .then(response => {
+        // 如果数据正确
+
+        let playlist = response.data.playlist;
+        // console.log(playlist);
+
+        // 守卫回调
+        next((vm) => {
+          // 通过 `vm` 访问组件实例
+          vm.songListId = Number(to.query.id);
+          vm.songListDetail = playlist;
+        });
+      })
+      .catch(function(error) {
+        console.log(error);
+      });
   },
 
   // 创建完成组件 第一次之后 需要监听路由 @待定
   // 路由更新守卫 进入路由之前 拦截路由
-  beforeRouteUpdate(to, from, next) {
-    // react to route changes...
-    // don't forget to call next()
-    // console.log(to, from);
-    from;
-    this.songListId = Number(to.query.id);
-    next();
-    console.log("xxx");
-  },
+  // beforeRouteUpdate(to, from, next) {
+  //   // react to route changes...
+  //   // don't forget to call next()
+  //   // console.log(to, from);
+  //   from;
+  //   this.songListId = Number(to.query.id);
+  //   next();
+  //   console.log("xxx");
+  // },
 
-  watch: {
-    songListId: function() {
-      console.log("变化了");
-    }
-  }
+  // watch: {
+  //   // keep-alive 保存存活 组件创建完成之后不会销毁
+  //   songListId: function() {
+  //     console.log("变化了");
+
+  //     const cacheSongListDetail = JSON.parse(
+  //       window.localStorage.getItem("sl-" + this.songListId)
+  //     );
+  //     if (cacheSongListDetail && cacheSongListDetail.expire > Date.now()) {
+  //       // 存在并且还没有过期
+  //       this.songListDetail = cacheSongListDetail.result;
+  //     } else {
+  //       // 已经过期
+  //       this.getSongListDetail(this.songListId);
+  //     }
+  //   }
+  // }
 };
 </script>
 
