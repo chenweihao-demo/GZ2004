@@ -11,6 +11,10 @@
 
     <div class="newsong">
       <CardTitle>推荐音乐</CardTitle>
+      <ul>
+        <!-- <SongItem v-for="(item, index) in newsongs" :key="index" :songItem="item" :order="index"></SongItem> -->
+        <SongItem v-for="(item, index) in newsongs" :key="index" :songItem="item"></SongItem>
+      </ul>
     </div>
   </div>
 </template>
@@ -21,6 +25,7 @@
 import CardTitle from "@/components/CardTitle.vue";
 import SongListCard from "@/components/SongListCard.vue";
 import HomeLink from "@/components/HomeLink.vue";
+import SongItem from "@/components/SongItem.vue";
 
 export default {
   name: "Home",
@@ -34,7 +39,8 @@ export default {
     // HelloWorld
     CardTitle,
     SongListCard,
-    HomeLink
+    HomeLink,
+    SongItem
   },
   methods: {
     // 获取推荐歌单
@@ -59,7 +65,27 @@ export default {
           console.log(error);
         });
     },
-    getNewSong: function() {},
+    getNewSong: function() {
+      this.axios
+        .get("/personalized/newsong")
+        .then(response => {
+          // 如果数据正确
+          // console.log(response);
+          this.newsongs = response.data.result;
+          // 获取到的数据放入本地存储
+          window.localStorage.setItem(
+            "newsongs",
+            // 过期时间1小时
+            JSON.stringify({
+              expire: Date.now() + 1 * 60 * 60 * 1000,
+              result: response.data.result
+            })
+          );
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+    },
 
     // 随机取六个推荐歌单
     randomPersonalizeds: function() {
@@ -90,6 +116,15 @@ export default {
     } else {
       // 已经过期
       this.getPersonalized();
+    }
+
+    const cacheNewsongs = JSON.parse(window.localStorage.getItem("newsongs"));
+    if (cacheNewsongs && cacheNewsongs.expire > Date.now()) {
+      // 存在并且还没有过期
+      this.newsongs = cacheNewsongs.result;
+    } else {
+      // 已经过期
+      this.getNewSong();
     }
   }
 };

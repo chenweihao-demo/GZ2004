@@ -1,38 +1,40 @@
 <template>
   <div class="palylist">
     <!-- palylist {{$route.query.id}} -->
-    <div class="header">
-      <div class="mask" :style="{backgroundImage: `url(${songListDetail.coverImgUrl})`}"></div>
-      <div class="fl">
-        <img :src="songListDetail.coverImgUrl" alt />
-        <span class="playcount">
-          <i class="fa fa-headphones"></i>
-          {{playCountParse(songListDetail.playCount)}}
-        </span>
-        <span class="icon">歌单</span>
+    <template v-if="songListDetail">
+      <div class="header">
+        <div class="mask" :style="{backgroundImage: `url(${songListDetail.coverImgUrl})`}"></div>
+        <div class="fl">
+          <img :src="songListDetail.coverImgUrl" alt />
+          <span class="playcount">
+            <i class="fa fa-headphones"></i>
+            {{playCountParse(songListDetail.playCount)}}
+          </span>
+          <span class="icon">歌单</span>
+        </div>
+        <div class="fr">
+          <h3>{{songListDetail.name}}</h3>
+          <img :src="songListDetail.creator.avatarUrl" alt />
+          <span>{{songListDetail.creator.nickname}}</span>
+        </div>
       </div>
-      <div class="fr">
-        <h3>{{songListDetail.name}}</h3>
-        <img :src="songListDetail.creator.avatarUrl" alt />
-        <span>{{songListDetail.creator.nickname}}</span>
-      </div>
-    </div>
 
-    <!--  -->
-    <div class="info">
-      <div class="tags">
-        <span>标签：</span>
-        <i v-for="(tag, index) in songListDetail.tags" :key="index">{{tag}}</i>
+      <!--  -->
+      <div class="info">
+        <div class="tags">
+          <span>标签：</span>
+          <i v-for="(tag, index) in songListDetail.tags" :key="index">{{tag}}</i>
+        </div>
+        <div class="desc" :class="{show: showMoreDesc}">
+          <span>简介：</span>
+          <span>{{songListDetail.description}}</span>
+        </div>
+        <div class="more" @click="showMoreDesc = !showMoreDesc">
+          <i v-if="showMoreDesc" class="fa fa-angle-up"></i>
+          <i v-else class="fa fa-angle-down"></i>
+        </div>
       </div>
-      <div class="desc" :class="{show: showMoreDesc}">
-        <span>简介：</span>
-        <span>{{songListDetail.description}}</span>
-      </div>
-      <div class="more" @click="showMoreDesc = !showMoreDesc">
-        <i v-if="showMoreDesc" class="fa fa-angle-up"></i>
-        <i v-else class="fa fa-angle-down"></i>
-      </div>
-    </div>
+    </template>
   </div>
 </template>
 <script>
@@ -55,7 +57,7 @@ export default {
         .then(response => {
           // 如果数据正确
           this.songListDetail = response.data.playlist;
-          //   console.log(response.data);
+          console.log(response.data);
 
           // 获取到的数据放入本地存储
           window.localStorage.setItem(
@@ -63,7 +65,7 @@ export default {
             // 过期时间1小时
             JSON.stringify({
               expire: Date.now() + 3 * 60 * 60 * 1000,
-              result: response.data.result
+              result: response.data.playlist
             })
           );
         })
