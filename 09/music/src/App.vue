@@ -2,25 +2,25 @@
   <div id="app" @touchstart="touchstart" @touchend="touchend">
     <!-- 一级路由出口 -->
     <keep-alive>
-      <router-view @tanslate-song-id="currentSongId = $event"></router-view>
+      <router-view @tanslate-song="currentSong = $event"></router-view>
     </keep-alive>
 
-    <!-- 播放器 -->
-    <audio v-if="currentSongUrl" :src="currentSongUrl" controls autoplay style="height:36px"></audio>
+    <!-- 播放器 边栏 -->
+    <PlayBar v-if="currentSong" :currentSong="currentSong"></PlayBar>
   </div>
 </template>
 <script>
+import PlayBar from "@/components/PlayBar";
+
 export default {
+  components: {
+    PlayBar
+  },
   data: function() {
     return {
-      currentSongId: "",
+      currentSong: null,
       touchstartX: 0
     };
-  },
-  computed: {
-    currentSongUrl: function() {
-      return `https://music.163.com/song/media/outer/url?id=${this.currentSongId}.mp3`;
-    }
   },
 
   methods: {
@@ -39,9 +39,17 @@ export default {
         this.touchstartY = 0;
         this.routerBack();
       }
+
+      if (event.changedTouches[0].clientX - this.touchstartX < -50) {
+        console.log("从右到左");
+        this.routerForward();
+      }
     },
     routerBack: function() {
       this.$router.back();
+    },
+    routerForward: function() {
+      this.$router.forward();
     }
   },
   watch: {

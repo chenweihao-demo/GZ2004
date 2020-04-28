@@ -20,7 +20,7 @@
           v-for="(item, index) in newsongs"
           :key="index"
           :songItem="item"
-          @tanslate-song-id="$emit('tanslate-song-id', $event)"
+          @tanslate-song="$emit('tanslate-song', $event)"
         ></SongItem>
       </ul>
     </div>

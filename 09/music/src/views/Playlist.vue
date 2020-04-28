@@ -101,29 +101,55 @@ export default {
 
     // 获取数据
 
-    window.axios
-      .get("/playlist/detail", {
-        params: {
-          id: to.query.id
-        }
-      })
-      .then(response => {
-        // 如果数据正确
-
-        let playlist = response.data.playlist;
-        // console.log(playlist);
-
-        // 守卫回调
-        next((vm) => {
-          // 通过 `vm` 访问组件实例
-          vm.songListId = Number(to.query.id);
-          vm.songListDetail = playlist;
-        });
-      })
-      .catch(function(error) {
-        console.log(error);
+    // 每次创建组件都拿数据 太频繁 本地存储
+    const cacheSongListDetail = JSON.parse(
+      window.localStorage.getItem("sl-" + to.query.id)
+    );
+    if (cacheSongListDetail && cacheSongListDetail.expire > Date.now()) {
+      // 存在并且还没有过期
+      // this.songListDetail = cacheSongListDetail.result;
+      // 守卫回调
+      next(vm => {
+        // 通过 `vm` 访问组件实例
+        vm.songListId = Number(to.query.id);
+        vm.songListDetail = cacheSongListDetail.playlist;
       });
-  },
+    } else {
+      // 已经过期
+      window.axios
+        .get("/playlist/detail", {
+          params: {
+            id: to.query.id
+          }
+        })
+        .then(response => {
+          // 如果数据正确
+
+          let playlist = response.data.playlist;
+          // console.log(playlist);
+
+          // 获取到的数据放入本地存储
+          window.localStorage.setItem(
+            "sl-" + to.query.id,
+            // 过期时间1小时
+            JSON.stringify({
+              expire: Date.now() + 3 * 60 * 60 * 1000,
+              playlist: response.data.playlist
+            })
+          );
+
+          // 守卫回调
+          next(vm => {
+            // 通过 `vm` 访问组件实例
+            vm.songListId = Number(to.query.id);
+            vm.songListDetail = playlist;
+          });
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+    }
+  }
 
   // 创建完成组件 第一次之后 需要监听路由 @待定
   // 路由更新守卫 进入路由之前 拦截路由

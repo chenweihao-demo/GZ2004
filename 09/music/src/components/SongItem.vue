@@ -1,5 +1,5 @@
 <template>
-  <li class="songitem" @click="$emit('tanslate-song-id', songItem.id)">
+  <li class="songitem" @click="$emit('tanslate-song', songItem)">
     <span class="order" v-if="order !== undefined">{{order + 1}}</span>
     <div class="main" :style="{marginLeft: order !== undefined? '0px':'10px'}">
       <h3>
