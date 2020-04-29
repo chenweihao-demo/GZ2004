@@ -7,6 +7,27 @@
     </head>
     <body>
         <audio src="https://music.163.com/song/media/outer/url?id=1435524840.mp3" controls></audio>
+        <div class="lyricBox">
+            <ul class="scroll"></ul>
+        </div>
+        <style>
+            .lyricBox {
+                height: 180px;
+                overflow-y: hidden;
+                background: lightblue;
+            }
+            ul.scroll {
+                margin: 0;
+                /* padding: 0; */
+                line-height: 20px;
+                font-size: 12px;
+                position: relative;
+                top: 50%;
+                margin-top: -10px;
+                transform: translateY(0px);
+                transition: transform 0.3s;
+            }
+        </style>
         <script>
             var audio = document.querySelector("audio");
 
@@ -30,17 +51,36 @@
                 };
             });
 
+            x.forEach((element) => {
+                var node = document.createElement("li");
+                node.innerText = element.text;
+                document.querySelector(".scroll").append(node);
+            });
+
             audio.ontimeupdate = function() {
-                // console.log(this.currentTime);
-                var y;
+                console.log(this.currentTime);
+                var index;
 
                 for (let i = 0; i < x.length; i++) {
-                    if (this.currentTime < x[i].time) {
-                        y = x[i - 1];
+                    if (this.currentTime + .150 < x[i].time) {
+                        index = i - 1;
                         break;
                     }
                 }
-                console.log(y.text);
+                console.log(index);
+                if (index === undefined) {
+                    index = x.length - 1;
+                }
+
+                console.log(x[index]);
+                document.querySelector("ul.scroll").style.transform = `translateY(${index * -20}px)`;
+                document.querySelectorAll("li").forEach((element, i) => {
+                    if (index === i) {
+                        element.style.color = "red";
+                    } else {
+                        element.style.color = "";
+                    }
+                });
             };
         </script>
     </body>

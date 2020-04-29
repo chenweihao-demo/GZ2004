@@ -23,17 +23,36 @@
     >
       <div v-show="showFullscreen" class="fullscreenplay">
         <div class="mask" :style="{backgroundImage: `url(${currentSong.picUrl})`}"></div>
-        <i class="fa fa-arrow-left" @click="showFullscreen=false"></i>
-        <div class="circle" :class="{active: playing}">
+        <header>
+          <i class="fa fa-arrow-left" @click="showFullscreen=false"></i>
+        </header>
+
+        <div
+          v-show="showCircle"
+          class="circle"
+          :class="{active: playing}"
+          @click="showCircle = false"
+        >
           <div class="needle"></div>
           <div class="glue">
             <img :src="currentSong.picUrl" alt />
           </div>
         </div>
+        <div v-show="!showCircle" class="lyric-box" @click="showCircle = true">
+          <ul class="scroll" :style="{transform: `translateY(${-currentLyricIndex * 28}px)`}">
+            <li
+              v-for="(item, index) in parsedLyric"
+              :class="{active: index===currentLyricIndex}"
+              :key="index"
+            >{{item.text}}</li>
+          </ul>
+        </div>
+
+        <footer>xxx</footer>
       </div>
     </transition>
 
-    <audio :src="currentSongUrl" autoplay></audio>
+    <audio :src="currentSongUrl" autoplay controls height="30"></audio>
   </div>
 </template>
 
@@ -45,7 +64,10 @@ export default {
   data: function() {
     return {
       playing: false,
-      showFullscreen: true
+      showFullscreen: true,
+      showCircle: false,
+      currentLyric: null,
+      currentLyricIndex: 0
     };
   },
   methods: {
@@ -58,7 +80,7 @@ export default {
 
       var duration = this.currentSong.song.duration;
 
-      audio.ontimeupdate = function() {
+      audio.ontimeupdate = () => {
         /** @type {HTMLCanvasElement} */
         // console.log(canvas);
         // 获取canvas元素
@@ -82,7 +104,7 @@ export default {
           18,
           17,
           -0.5 * Math.PI,
-          -0.5 * Math.PI + 2 * Math.PI * ((this.currentTime * 1000) / duration)
+          -0.5 * Math.PI + 2 * Math.PI * ((audio.currentTime * 1000) / duration)
         );
         // context.closePath();
         context.strokeStyle = "rgba(255,0,0,0.7)";
@@ -90,7 +112,47 @@ export default {
         context.lineWidth = "1";
         // 描边宽度
         context.stroke(); // 路径描边
+
+        // 滚动歌词
+        // this.currentTime
+        // currentLyricIndex
+        let index;
+
+        for (let i = 0; i < this.parsedLyric.length; i++) {
+          if (audio.currentTime + 0.15 < this.parsedLyric[i].time) {
+            index = i - 1;
+            break;
+          }
+        }
+        if (index === undefined) {
+          index = this.parsedLyric.length - 1;
+        }
+        this.currentLyricIndex = index;
       };
+    },
+    getLyric: function() {
+      var cachedLyric = window.localStorage.getItem(
+        "lyric" + this.currentSong.id
+      );
+
+      if (cachedLyric) {
+        this.currentLyric = cachedLyric;
+      } else {
+        window.axios
+          .get("lyric", {
+            params: {
+              id: this.currentSong.id
+            }
+          })
+          .then(response => {
+            this.currentLyric = response.data.lrc.lyric;
+
+            window.localStorage.setItem(
+              "lyric" + this.currentSong.id,
+              response.data.lrc.lyric
+            );
+          });
+      }
     }
   },
 
@@ -99,6 +161,19 @@ export default {
       if (this.currentSong)
         return `https://music.163.com/song/media/outer/url?id=${this.currentSong.id}.mp3`;
       else return "";
+    },
+    parsedLyric: function() {
+      return this.currentLyric.split("\n").map(item => {
+        var time = item.substr(1, 9);
+        var m = time.substr(0, 2);
+        var s = time.substr(3, 2);
+        var n = time.substr(5);
+
+        return {
+          time: Number(m) * 60 + Number(s) + Number(n),
+          text: item.substr(11) || '---------'
+        };
+      });
     }
   },
 
@@ -125,7 +200,13 @@ export default {
       } else {
         audio.pause();
       }
+    },
+    currentSong: function() {
+      this.getLyric();
     }
+  },
+  created() {
+    this.getLyric();
   }
 };
 </script>
@@ -212,24 +293,32 @@ export default {
   z-index: 9999;
   width: 100%;
   height: 100vh;
+  display: flex;
+  flex-direction: column;
   .mask {
-    filter: blur(30px);
+    filter: blur(30px) brightness(0.5);
     transform: scale(2);
     width: 100%;
     height: 100%;
     background-size: cover;
     background-position: center;
-    background-color: lightblue;
+    background-color: rgba(0, 0, 0, 0.3);
     position: absolute;
     z-index: -1;
   }
+  header {
+    height: 50px;
+    // background: lightblue;
+  }
   .circle {
+    flex: 1;
     text-align: center;
     position: relative;
     .glue {
       padding: 54px;
       // background: red;
-      background-image: url('../assets/disc_light-ip6.png'),url('../assets/disc-ip6.png');
+      background-image: url("../assets/disc_light-ip6.png"),
+        url("../assets/disc-ip6.png");
       background-size: 100%;
       border-radius: 50%;
       display: inline-block;
@@ -267,6 +356,35 @@ export default {
         animation-play-state: running;
       }
     }
+  }
+  .lyric-box {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+
+    .scroll {
+      text-align: center;
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 50%;
+
+      margin-top: -1em;
+      transition: transform 0.3s;
+      li {
+        line-height: 2em;
+        font-size: 14px;
+        height: 2em;
+        color: gray;
+        &.active {
+          color: white;
+        }
+      }
+    }
+  }
+  footer {
+    height: 100px;
+    // background: lightblue;
   }
 }
 .fadeIn {
