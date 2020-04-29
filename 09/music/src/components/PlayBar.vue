@@ -24,6 +24,12 @@
       <div v-show="showFullscreen" class="fullscreenplay">
         <div class="mask" :style="{backgroundImage: `url(${currentSong.picUrl})`}"></div>
         <i class="fa fa-arrow-left" @click="showFullscreen=false"></i>
+        <div class="circle" :class="{active: playing}">
+          <div class="needle"></div>
+          <div class="glue">
+            <img :src="currentSong.picUrl" alt />
+          </div>
+        </div>
       </div>
     </transition>
 
@@ -39,7 +45,7 @@ export default {
   data: function() {
     return {
       playing: false,
-      showFullscreen: false
+      showFullscreen: true
     };
   },
   methods: {
@@ -216,6 +222,51 @@ export default {
     background-color: lightblue;
     position: absolute;
     z-index: -1;
+  }
+  .circle {
+    text-align: center;
+    position: relative;
+    .glue {
+      padding: 54px;
+      // background: red;
+      background-image: url('../assets/disc_light-ip6.png'),url('../assets/disc-ip6.png');
+      background-size: 100%;
+      border-radius: 50%;
+      display: inline-block;
+      margin-top: 84px;
+      animation: rotate 6s linear infinite;
+      animation-play-state: paused;
+
+      img {
+        width: 180px;
+        height: 180px;
+        border-radius: 50%;
+        vertical-align: middle;
+      }
+    }
+    .needle {
+      width: 96px;
+      height: 137px;
+      background-image: url("../assets/needle.png");
+      // background-color: lightblue;
+      background-size: 100%;
+      position: absolute;
+      top: 0;
+      left: 50%;
+      z-index: 1;
+      margin-left: -16px;
+      transform: rotate(-12deg);
+      transform-origin: 16px 0;
+      transition: all 0.3s;
+    }
+    &.active {
+      .needle {
+        transform: rotate(0deg);
+      }
+      .glue {
+        animation-play-state: running;
+      }
+    }
   }
 }
 .fadeIn {
