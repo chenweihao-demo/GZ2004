@@ -191,18 +191,20 @@ export default {
     parsedLyric: function() {
       if (this.currentLyric) {
         return this.currentLyric.split("\n").map(item => {
-          console.log(item);
-          if (item !== "") {
-            var time = item.match(/\d{2}:\d{2}\.\d+/i)[0];
+          // console.log(item);
+          var regex = /\d{2}:\d{2}\.\d+/i;
+          if (item.search(regex) !== -1) {
+            var time = item.match(regex)[0];
             var m = time.substr(0, 2);
             var s = time.substr(3, 2);
             var n = time.substr(5);
+            return {
+              time: Number(m) * 60 + Number(s) + Number(n),
+              text: item.substr(11) || "---------"
+            };
+          } else {
+            return {};
           }
-
-          return {
-            time: Number(m) * 60 + Number(s) + Number(n),
-            text: item.substr(11) || "---------"
-          };
         });
       } else {
         return null;
