@@ -12,8 +12,28 @@
         <i v-if="playing" class="fa fa-pause"></i>
         <i v-else class="fa fa-play"></i>
       </div>
-      <div class="playlist"></div>
+      <div class="playlist" @click.stop="showPlayList=!showPlayList">
+        <i class="fa fa-bars" aria-hidden="true"></i>
+      </div>
     </div>
+
+    <!-- 播放列表 -->
+    <transition
+      name="custom-classes-transition"
+      enter-active-class="animated slideInUp"
+      leave-active-class="animated slideOutDown"
+    >
+      <ul v-if="showPlayList" class="defaultPlayList">
+        <SongItem
+          v-for="(item, index) in defaultPlayList"
+          :key="index"
+          :songItem="item"
+          :options="{order: index, info: false}"
+          @tanslate-song="$emit('tanslate-song', $event)"
+          :currentSong="currentSong"
+        ></SongItem>
+      </ul>
+    </transition>
 
     <!-- fullscreen -->
     <transition
@@ -57,17 +77,23 @@
 </template>
 
 <script>
+import SongItem from "@/components/SongItem";
 export default {
   props: {
     currentSong: Object
   },
+  components: {
+    SongItem
+  },
   data: function() {
     return {
       playing: false,
-      showFullscreen: true,
+      showFullscreen: false,
       showCircle: false,
       currentLyric: null,
-      currentLyricIndex: 0
+      currentLyricIndex: 0,
+      showPlayList: false,
+      defaultPlayList: [this.currentSong]
     };
   },
   methods: {
@@ -163,17 +189,24 @@ export default {
       else return "";
     },
     parsedLyric: function() {
-      return this.currentLyric.split("\n").map(item => {
-        var time = item.substr(1, 9);
-        var m = time.substr(0, 2);
-        var s = time.substr(3, 2);
-        var n = time.substr(5);
+      if (this.currentLyric) {
+        return this.currentLyric.split("\n").map(item => {
+          console.log(item);
+          if (item !== "") {
+            var time = item.match(/\d{2}:\d{2}\.\d+/i)[0];
+            var m = time.substr(0, 2);
+            var s = time.substr(3, 2);
+            var n = time.substr(5);
+          }
 
-        return {
-          time: Number(m) * 60 + Number(s) + Number(n),
-          text: item.substr(11) || '---------'
-        };
-      });
+          return {
+            time: Number(m) * 60 + Number(s) + Number(n),
+            text: item.substr(11) || "---------"
+          };
+        });
+      } else {
+        return null;
+      }
     }
   },
 
@@ -201,8 +234,18 @@ export default {
         audio.pause();
       }
     },
-    currentSong: function() {
+    currentSong: function(value) {
       this.getLyric();
+      // 加入列表 需要过滤重复
+      // this.defaultPlayList.push(value);
+
+      let isExist = this.defaultPlayList.some(item => {
+        return item.id == value.id;
+      });
+
+      console.log(isExist);
+
+      if (!isExist) this.defaultPlayList.push(value);
     }
   },
   created() {
@@ -230,6 +273,7 @@ export default {
   bottom: 0;
   left: 0;
   width: 100%;
+  z-index: 10;
   .margin () {
     margin: 0 10px;
   }
@@ -282,8 +326,37 @@ export default {
     .margin;
     width: 28px;
     height: 28px;
-    background: red;
+    // background: red;
+    position: relative;
+    border: 1px solid lightgray;
+    border-radius: 50%;
+    i {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      color: lightgray;
+      font-size: 12px;
+      display: block;
+      margin-top: -6px;
+      margin-left: -6px;
+      line-height: 1em;
+      width: 12px;
+      height: 12px;
+      text-align: center;
+    }
   }
+}
+
+.defaultPlayList {
+  position: fixed;
+  bottom: 50px;
+  left: 2.5%;
+  width: 95%;
+
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.3);
+  z-index: 9;
 }
 
 .fullscreenplay {

@@ -21,6 +21,8 @@
           :key="index"
           :songItem="item"
           @tanslate-song="$emit('tanslate-song', $event)"
+          :options="{info: true}"
+          :currentSong="currentSong"
         ></SongItem>
       </ul>
     </div>
@@ -37,11 +39,15 @@ import SongItem from "@/components/SongItem.vue";
 
 export default {
   name: "Home",
+  props: {
+    currentSong: Object
+  },
   data: function() {
     return {
       personalizeds: [],
       newsongs: [],
-      showLoading: false
+      showLoading: false,
+      
     };
   },
   components: {

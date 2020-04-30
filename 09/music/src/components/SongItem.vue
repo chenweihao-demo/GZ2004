@@ -1,28 +1,36 @@
 <template>
   <li class="songitem" @click="$emit('tanslate-song', songItem)">
-    <span class="order" v-if="order !== undefined">{{order + 1}}</span>
-    <div class="main" :style="{marginLeft: order !== undefined? '0px':'10px'}">
+    <span class="order" v-if="options.order !== undefined">{{options.order + 1}}</span>
+    <div class="main" :style="{marginLeft: options.order !== undefined? '0px':'10px'}">
       <h3>
         {{songItem.name}}
         <span class="alias">{{songItem.song.alias[0]}}</span>
       </h3>
 
-      <div class="info">
+      <div class="info" v-if="options.info !== false">
         <i class="icon icon-quality"></i>
         <span class="artists">{{joinArtists(songItem.song.artists)}}</span>
 
         <span class="album">-{{songItem.song.album.name}}</span>
       </div>
     </div>
-    <i class="icon icon-play"></i>
+    <img
+      class="icon icon-play"
+      style="background:none"
+      v-if="currentSong && songItem.id === currentSong.id"
+      src="../assets/playing.svg"
+      alt
+    />
+    <i v-else class="icon icon-play"></i>
   </li>
 </template>
 
 <script>
 export default {
   props: {
-    order: Number,
-    songItem: Object
+    options: Object,
+    songItem: Object,
+    currentSong: Object
   },
   methods: {
     joinArtists: function(artists) {

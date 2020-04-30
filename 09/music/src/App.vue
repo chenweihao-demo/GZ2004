@@ -2,11 +2,11 @@
   <div id="app" @touchstart="touchstart" @touchend="touchend">
     <!-- 一级路由出口 -->
     <keep-alive>
-      <router-view @tanslate-song="currentSong = $event"></router-view>
+      <router-view @tanslate-song="currentSong = $event" :currentSong="currentSong"></router-view>
     </keep-alive>
 
     <!-- 播放器 边栏 -->
-    <PlayBar v-if="currentSong" :currentSong="currentSong"></PlayBar>
+    <PlayBar @tanslate-song="currentSong = $event" v-if="currentSong" :currentSong="currentSong"></PlayBar>
   </div>
 </template>
 <script>
